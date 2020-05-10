@@ -7,42 +7,53 @@
 html, body, table, tbody, tr, td, input {
 	margin: 0;
 	padding: 0;
+	border: none;
 	user-select: none;
-}
-body {
-	font-family: sans-serif;
 }
 table {
 	margin: 20px auto;
 	border-collapse: collapse;
+	font: 21px sans-serif;
 }
-table.edit td {
-	background: white;
-	border: 1px solid red;
-}
-table.edit td input {
-	width: 40px;
-	height: 39px;
-	border: none;
-	padding: 3px;
-}
-table.play td {
-	background: red;
-	border: 1px solid white;
+table td {
 	width: 40px;
 	height: 40px;
 	text-align: center;
-	color: red;
-}
-table.play td.populated {
+	position: relative;
 	background: white;
 	border: 1px solid red;
-	border-radius: 100%;
+	color: red;
+}
+table td input {
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	font: 16px sans-serif;
+}
+table td input:placeholder-shown {
+	background: #FFEEEE;
+}
+table.play td.populated {
 	cursor: pointer;
 }
+table.play td.blank {
+	background: red;
+	border-color: white;
+}
 table.play td.on {
-	background: #33CC33;
-	color: black;
+	color: #800000;
+}
+table.play td.on::before {
+	content: "";
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	right: 2px;
+	bottom: 2px;
+	border-radius: 100%;
+	background: #00BB00;
+	mix-blend-mode: multiply;
+	opacity: 0.6;
 }
 button {
 	display: block;
@@ -79,13 +90,9 @@ function makeInput(name, type, value) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-const data = document.location.search;
-if(data) {
-	const params = new Map();
-	data.replace(/^\?/, '').split('&').forEach((p) => {
-		const [k, v] = p.split('=');
-		params.set(k, v);
-	});
+const { search } = document.location;
+if (search) {
+	const params = new URLSearchParams(search);
 	const count = Number.parseInt(params.get('count'), 10);
 	const cols = Number.parseInt(params.get('cols'), 10);
 	const rows = Number.parseInt(params.get('rows'), 10);
@@ -94,11 +101,13 @@ if(data) {
 			const num = params.get(`t${i}c${col}r${row}`);
 			if (num) {
 				td.textContent = num;
-				td.className = 'populated';
+				td.classList.add('populated');
 				td.addEventListener('click', toggle);
+			} else {
+				td.classList.add('blank');
 			}
 		});
-		table.className = 'play';
+		table.classList.add('play');
 		document.body.appendChild(table);
 	}
 } else {
@@ -113,9 +122,10 @@ if(data) {
 			const input = makeInput(`t${i}c${col}r${row}`, 'number', '');
 			input.setAttribute('min', '1');
 			input.setAttribute('max', '90');
+			input.setAttribute('placeholder', ' ');
 			td.appendChild(input);
 		});
-		table.className = 'edit';
+		table.classList.add('edit');
 		form.appendChild(table);
 	}
 	form.appendChild(makeInput('count', 'hidden', count));
