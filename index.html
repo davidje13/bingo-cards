@@ -1,0 +1,143 @@
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bingo Cards</title>
+<style>
+html, body, table, tbody, tr, td, input {
+	margin: 0;
+	padding: 0;
+}
+body {
+	font-family: sans-serif;
+}
+table {
+	margin: 10px;
+	border-collapse: collapse;
+}
+table.edit td {
+	background: white;
+	border: 1px solid red;
+}
+table.edit td input {
+	width: 40px;
+	height: 40px;
+	border: none;
+	padding: 3px;
+}
+table.play td {
+	background: red;
+	border: 1px solid white;
+	width: 40px;
+	height: 40px;
+	text-align: center;
+	color: red;
+}
+table.play td.populated {
+	background: white;
+	border: 1px solid red;
+	border-radius: 100%;
+	cursor: pointer;
+}
+table.play td.on {
+	background: yellow;
+}
+</style>
+<script>
+function buildTable(cols, rows, cellFn) {
+	const table = document.createElement('table');
+	const tbody = document.createElement('tbody');
+	for (let r = 0; r < rows; ++ r) {
+		const tr = document.createElement('tr');
+		for (let c = 0; c < cols; ++ c) {
+			const td = document.createElement('td');
+			cellFn(td, c, r);
+			tr.appendChild(td);
+		}
+		tbody.appendChild(tr);
+	}
+	table.appendChild(tbody);
+	return table;
+}
+
+function toggle(e) {
+	const o = e.currentTarget;
+	if (o.className.includes('on')) {
+		o.className = o.className.replace(/ *on */, ' ');
+	} else {
+		o.className += ' on';
+	}
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+const data = document.location.search;
+if(data) {
+	const params = new Map();
+	data.replace(/^\?/, '').split('&').forEach((p) => {
+		const [k, v] = p.split('=');
+		params.set(k, v);
+	});
+	const count = +params.get('count');
+	const cols = +params.get('cols');
+	const rows = +params.get('rows');
+	for (let i = 0; i < count; ++ i) {
+		const table = buildTable(cols, rows, (td, col, row) => {
+			const num = params.get('t' + i + 'c' + col + 'r' + row);
+			if (num) {
+				td.textContent = num;
+				td.className = 'populated';
+				td.addEventListener('click', toggle);
+			}
+		});
+		table.className = 'play';
+		document.body.appendChild(table);
+	}
+} else {
+	const form = document.createElement('form');
+	form.setAttribute('target', '#');
+	form.setAttribute('method', 'GET');
+	const count = 3;
+	const cols = 9;
+	const rows = 3;
+	for (let i = 0; i < count; ++ i) {
+		const table = buildTable(cols, rows, (td, col, row) => {
+			const input = document.createElement('input');
+			input.setAttribute('type', 'number');
+			input.setAttribute('min', '1');
+			input.setAttribute('max', '99');
+			input.setAttribute('name', 't' + i + 'c' + col + 'r' + row);
+			input.setAttribute('value', '');
+			td.appendChild(input);
+		});
+		table.className = 'edit';
+		form.appendChild(table);
+	}
+	const countIn = document.createElement('input');
+	countIn.setAttribute('type', 'hidden');
+	countIn.setAttribute('name', 'count');
+	countIn.setAttribute('value', count);
+	form.appendChild(countIn);
+
+	const colsIn = document.createElement('input');
+	colsIn.setAttribute('type', 'hidden');
+	colsIn.setAttribute('name', 'cols');
+	colsIn.setAttribute('value', cols);
+	form.appendChild(colsIn);
+
+	const rowsIn = document.createElement('input');
+	rowsIn.setAttribute('type', 'hidden');
+	rowsIn.setAttribute('name', 'rows');
+	rowsIn.setAttribute('value', rows);
+	form.appendChild(rowsIn);
+
+	const submit = document.createElement('button');
+	submit.innerText = 'Play';
+	form.appendChild(submit);
+	document.body.appendChild(form);
+}
+});
+</script>
+</head>
+<body>
+</body>
+</html>
