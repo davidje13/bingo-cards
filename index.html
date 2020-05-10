@@ -1,7 +1,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=1,minimum-scale=1,maximum-scale=1">
 <title>Bingo Cards</title>
 <style>
 html, body, table, tbody, tr, td, input {
@@ -13,7 +13,7 @@ body {
 	font-family: sans-serif;
 }
 table {
-	margin: 10px;
+	margin: 20px auto;
 	border-collapse: collapse;
 }
 table.edit td {
@@ -22,7 +22,7 @@ table.edit td {
 }
 table.edit td input {
 	width: 40px;
-	height: 40px;
+	height: 39px;
 	border: none;
 	padding: 3px;
 }
@@ -42,6 +42,11 @@ table.play td.populated {
 }
 table.play td.on {
 	background: #33CC33;
+	color: black;
+}
+button {
+	display: block;
+	margin: 10px auto;
 }
 </style>
 <script>
@@ -105,7 +110,7 @@ if(data) {
 			const input = document.createElement('input');
 			input.setAttribute('type', 'number');
 			input.setAttribute('min', '1');
-			input.setAttribute('max', '99');
+			input.setAttribute('max', '90');
 			input.setAttribute('name', 't' + i + 'c' + col + 'r' + row);
 			input.setAttribute('value', '');
 			td.appendChild(input);
