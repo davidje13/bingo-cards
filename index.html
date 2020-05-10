@@ -67,12 +67,15 @@ function buildTable(cols, rows, cellFn) {
 }
 
 function toggle(e) {
-	const o = e.currentTarget;
-	if (o.className.includes('on')) {
-		o.className = o.className.replace(/ *on */, ' ');
-	} else {
-		o.className += ' on';
-	}
+	e.currentTarget.classList.toggle('on');
+}
+
+function makeInput(name, type, value) {
+	const input = document.createElement('input');
+	input.setAttribute('type', type);
+	input.setAttribute('name', name);
+	input.setAttribute('value', value);
+	return input;
 }
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -83,12 +86,12 @@ if(data) {
 		const [k, v] = p.split('=');
 		params.set(k, v);
 	});
-	const count = +params.get('count');
-	const cols = +params.get('cols');
-	const rows = +params.get('rows');
+	const count = Number.parseInt(params.get('count'), 10);
+	const cols = Number.parseInt(params.get('cols'), 10);
+	const rows = Number.parseInt(params.get('rows'), 10);
 	for (let i = 0; i < count; ++ i) {
 		const table = buildTable(cols, rows, (td, col, row) => {
-			const num = params.get('t' + i + 'c' + col + 'r' + row);
+			const num = params.get(`t${i}c${col}r${row}`);
 			if (num) {
 				td.textContent = num;
 				td.className = 'populated';
@@ -99,42 +102,25 @@ if(data) {
 		document.body.appendChild(table);
 	}
 } else {
-	const form = document.createElement('form');
-	form.setAttribute('target', '#');
-	form.setAttribute('method', 'GET');
 	const count = 3;
 	const cols = 9;
 	const rows = 3;
+
+	const form = document.createElement('form');
+	form.setAttribute('method', 'GET');
 	for (let i = 0; i < count; ++ i) {
 		const table = buildTable(cols, rows, (td, col, row) => {
-			const input = document.createElement('input');
-			input.setAttribute('type', 'number');
+			const input = makeInput(`t${i}c${col}r${row}`, 'number', '');
 			input.setAttribute('min', '1');
 			input.setAttribute('max', '90');
-			input.setAttribute('name', 't' + i + 'c' + col + 'r' + row);
-			input.setAttribute('value', '');
 			td.appendChild(input);
 		});
 		table.className = 'edit';
 		form.appendChild(table);
 	}
-	const countIn = document.createElement('input');
-	countIn.setAttribute('type', 'hidden');
-	countIn.setAttribute('name', 'count');
-	countIn.setAttribute('value', count);
-	form.appendChild(countIn);
-
-	const colsIn = document.createElement('input');
-	colsIn.setAttribute('type', 'hidden');
-	colsIn.setAttribute('name', 'cols');
-	colsIn.setAttribute('value', cols);
-	form.appendChild(colsIn);
-
-	const rowsIn = document.createElement('input');
-	rowsIn.setAttribute('type', 'hidden');
-	rowsIn.setAttribute('name', 'rows');
-	rowsIn.setAttribute('value', rows);
-	form.appendChild(rowsIn);
+	form.appendChild(makeInput('count', 'hidden', count));
+	form.appendChild(makeInput('cols', 'hidden', cols));
+	form.appendChild(makeInput('rows', 'hidden', rows));
 
 	const submit = document.createElement('button');
 	submit.innerText = 'Play';
