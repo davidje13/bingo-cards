@@ -11,13 +11,20 @@ html, body, table, tbody, tr, td, input {
 	user-select: none;
 }
 table {
-	margin: 20px auto;
+	margin: 5px auto 20px;
 	border-collapse: collapse;
-	font: 21px sans-serif;
+	font-family: sans-serif;
+	--cell-size: 50px;
+}
+@media (max-width: 478px) {
+	table {
+		--cell-size: calc((100vw - 10px) / 9 - 2px);
+	}
 }
 table td {
-	width: 40px;
-	height: 40px;
+	width: var(--cell-size);
+	height: var(--cell-size);
+	font-size: calc(var(--cell-size) * 0.55);
 	text-align: center;
 	position: relative;
 	background: white;
@@ -36,14 +43,14 @@ table td input:placeholder-shown {
 table.play td.populated {
 	cursor: pointer;
 }
-table.play td.blank {
+table td.blank {
 	background: red;
 	border-color: white;
 }
-table.play td.on {
+table td.on {
 	color: #800000;
 }
-table.play td.on::before {
+table td.on::before {
 	content: "";
 	position: absolute;
 	top: 2px;
